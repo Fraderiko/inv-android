@@ -1,0 +1,3 @@
+rootProject.name = 'invreactnativeapp'
+
+include ':app'
