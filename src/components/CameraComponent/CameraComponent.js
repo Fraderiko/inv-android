@@ -14,8 +14,8 @@ export default class CameraComponent extends Component {
                 <CameraKitCameraScreen
                     actions={{ leftButtonText: 'Назад' }}
                     onBottomButtonPressed={(event) => 
-                        this.props.navigation.navigate('Image', { image: event.captureImages[0].uri})
-                        // this.props.navigation.goBack() 
+                        // this.props.navigation.navigate('Image', { image: event.captureImages[0].uri})
+                        this.props.navigation.goBack() 
                     }
                     showFrame={false}
                     scanBarcode={true}
