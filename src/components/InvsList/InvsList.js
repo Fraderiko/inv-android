@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, TextInput, StyleSheet, Text, Button, ActivityIndicator, FlatList } from 'react-native';
 import { connect } from 'react-redux'
 import { getInvs, startLoading } from '../../actions/InvsListActions'
+import { invOpened, navigateToInv } from '../../actions/InvActions'
 import InvListItem from './InvListItem'
 import Separator from './Separator'
 import uuid from 'uuid/v4'
@@ -12,6 +13,11 @@ class InvsList extends Component {
         const { startLoading, getInvs, counter } = this.props
         startLoading()
         getInvs(counter)
+    }
+
+    onInvPress(_id) {
+        this.props.invOpened(this.props.invs[this.props.invs.findIndex(i => i._id === _id)])
+        this.props.navigateToInv(this.props.invs[this.props.invs.findIndex(i => i._id === _id)].name)
     }
 
     getCounted = (lines, fields) => {
@@ -46,7 +52,7 @@ class InvsList extends Component {
                                         name = {item.name}
                                         counted = {item.counted}
                                         _id={item._id}
-                                        onPress={(_id) => console.log(_id)} />}
+                                        onPress={(_id) => this.onInvPress(_id)} />}
             ItemSeparatorComponent={ () => <Separator/> }
             />
     }
@@ -59,11 +65,14 @@ class InvsList extends Component {
 const mapStateToProps = state => {
     return {
         counter: state.auth._id,
-        invs: state.invs.invs
+        invs: state.invs.invs,
+        navigation: state.nav
     }
 }
 
 export default connect(mapStateToProps, {
     startLoading,
-    getInvs
+    getInvs,
+    invOpened,
+    navigateToInv
 })(InvsList)

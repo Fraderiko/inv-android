@@ -13,3 +13,6 @@ export const AUTH_OK = 'AUTH_OK'
 export const INVS_LIST_GET = 'INVS_LIST_GET'
 export const INVS_LIST_LOADING = 'INVS_LIST_LOADING'
 export const INVS_LIST_SHOW = 'INVS_LIST_SHOW'
+
+// INV
+export const INV_SET = 'INV_SET'

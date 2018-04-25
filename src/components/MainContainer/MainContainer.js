@@ -3,6 +3,7 @@ import { View, TextInput, StyleSheet, Button, ActivityIndicator } from 'react-na
 import { connect } from 'react-redux'
 import Login from '../Login/Login'
 import InvsList from '../InvsList/InvsList'
+
 class MainContainer extends Component {
 
     resolveComponent() {
@@ -14,7 +15,7 @@ class MainContainer extends Component {
             authFailed={(isWrong) => this.wrongCredentials(isWrong)}
             navigation={this.props.navigation} />
         } else {
-            return <InvsList/>
+            return <InvsList navigation={this.props.navigation}/>
         }
     }
 
