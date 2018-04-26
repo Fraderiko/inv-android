@@ -47,9 +47,6 @@ export const navigateToCamera = (_id) => {
 }
 
 export const imageCaptured = (_id, uri) => {
-
-    console.log('captured!')
-
     return (dispatch) => {
         dispatch({ type: LINE_IMAGE_CAPTURED, payload: { _id, uri } })
         dispatch(NavigationActions.back({ key: null }))

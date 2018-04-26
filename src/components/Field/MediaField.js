@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, TextInput, StyleSheet, Text, Button, ActivityIndicator, FlatList } from 'react-native';
 import { connect } from 'react-redux'
 import MediaFieldItem from './MediaFieldItem'
+import MediaFieldEmpty from './MediaFieldEmpty'
 import Separator from '../InvsList/Separator'
 import uuid from 'uuid/v4'
 import { navigateToCamera } from '../../actions/LineActions'
@@ -25,12 +26,13 @@ class MediaField extends Component {
 
     render() {
         return (
-            <FlatList
-                data={[{ name: 'Заглушка' }]}
+            <FlatList style={styles.container}
+                data={this.props.value}
                 keyExtractor={(x, i) => uuid()}
+                ListEmptyComponent={<MediaFieldEmpty style={{ marginTop: '50%' }} onPress={ () => this.onFieldPress()}/>}
                 renderItem={({ item }) => <MediaFieldItem
                     _id={''}
-                    name={item.name}
+                    value={item}
                     onPress={(_id) => this.onFieldPress(_id)} />}
                 ItemSeparatorComponent={() => <Separator />}
             />
@@ -46,13 +48,20 @@ const mapStateToProps = state => {
 
     return {
         _id: _id(),
-        value: state.line.line[state.line.line.findIndex(l => l._id === _id())] !== undefined ? state.line.line[state.line.line.findIndex(l => l._id === _id())].value : "",
+        value: state.line.line[state.line.line.findIndex(l => l._id === _id())] !== undefined ? state.line.line[state.line.line.findIndex(l => l._id === _id())].media : [],
         fields: state.inv.inv.fields,
         line: state.line.line,
         inv: state.inv.inv,
         nav: state.nav
     }
 }
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: 'white'
+    }
+})
+
 
 export default connect(mapStateToProps, {
     navigateToCamera

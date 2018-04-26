@@ -6,13 +6,11 @@ import { connect } from 'react-redux';
 
 class CameraComponent extends Component {
     render() {
-
-        console.log(this.props)
-
         return (
             <View style={styles.container}>
                 <CameraKitCameraScreen
                     onBottomButtonPressed={(event) => 
+                        // console.log(event)
                         this.props.imageCaptured(this.props._id, event.captureImages[0].uri)
                     }
                     showFrame={false}
