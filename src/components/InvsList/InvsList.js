@@ -45,7 +45,13 @@ class InvsList extends Component {
     }
 
     resolveComponent() {
-        return <FlatList
+
+        const { isLoading } = this.props
+
+        if (isLoading) {
+            return <ActivityIndicator style={styles.activity}/>
+        } else {
+            return <FlatList
             data = {this.props.invs.map(i =>  ({ _id: i._id, name: i.name, counted: this.getCounted(i.lines, i.fields) }) )}
             keyExtractor = { (x, i) => uuid() }
             renderItem = {({ item }) => <InvListItem 
@@ -55,6 +61,7 @@ class InvsList extends Component {
                                         onPress={(_id) => this.onInvPress(_id)} />}
             ItemSeparatorComponent={ () => <Separator/> }
             />
+        }
     }
 
     render() {
@@ -66,9 +73,20 @@ const mapStateToProps = state => {
     return {
         counter: state.auth._id,
         invs: state.invs.invs,
-        navigation: state.nav
+        navigation: state.nav,
+        isLoading: state.invs.isLoading
     }
 }
+
+const styles = StyleSheet.create({
+    activity: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+    }
+})
+
 
 export default connect(mapStateToProps, {
     startLoading,

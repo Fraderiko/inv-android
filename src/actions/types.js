@@ -16,3 +16,9 @@ export const INVS_LIST_SHOW = 'INVS_LIST_SHOW'
 
 // INV
 export const INV_SET = 'INV_SET'
+
+// LINE
+
+export const LINE_SHOW = 'LINE_SHOW'
+export const LINE_TEXT_FIELD_CHANGED = 'LINE_TEXT_FIELD_CHANGED'
+export const LINE_IMAGE_CAPTURED = 'LINE_IMAGE_CAPTURED'

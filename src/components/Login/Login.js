@@ -25,6 +25,7 @@ class LoginForm extends Component {
             return (
                 <View style={styles.container}>
                     <TextInput
+                        autoCapitalize={'none'}
                         placeholder={'Логин'}
                         style={styles.input}
                         value={login}

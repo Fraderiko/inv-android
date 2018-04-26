@@ -1,13 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 
-class LineListItem extends React.PureComponent {
+class MediaFieldItem extends React.PureComponent {
     
     render() {
         return (
             <TouchableOpacity onPress={() => this.props.onPress(this.props._id)} style={styles.container}>
                 <Text style={styles.styleBold}>{this.props.name}</Text>
-                <Text style={styles.style}>{this.props.cell}</Text>
             </TouchableOpacity>
         )
     }
@@ -40,4 +39,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default LineListItem
+export default MediaFieldItem
