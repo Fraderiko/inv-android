@@ -1,8 +1,11 @@
 import { NavigationActions } from 'react-navigation'
 import {
     LINE_TEXT_FIELD_CHANGED,
-    LINE_IMAGE_CAPTURED
+    LINE_IMAGE_CAPTURED,
+    LINE_MEDIA_DELETE,
+    LINE_MEDIA_SET,
 } from '../actions/types'
+import { upload } from '../api/index'
 
 export const navigateToTextField = (title, _id) => {
     return (dispatch) => {
@@ -50,5 +53,29 @@ export const imageCaptured = (_id, uri) => {
     return (dispatch) => {
         dispatch({ type: LINE_IMAGE_CAPTURED, payload: { _id, uri } })
         dispatch(NavigationActions.back({ key: null }))
+    }
+}
+
+export const onMediaDelete = (_id, index) => {
+    return {
+        type: LINE_MEDIA_DELETE, payload: { _id, index }
+    }
+}
+
+export const uploadFiles = (files, _id) => {
+    let data = new FormData();
+    files.forEach(f => {
+        data.append('file', {
+            uri: 'file://' + f,
+            name: 'file.jpg',
+            type: 'image/jpg'
+        })
+    })
+
+    return (dispatch) => {
+        upload(data).then(response => {
+            dispatch({ type: LINE_MEDIA_SET, payload: { response, _id } })
+            dispatch(NavigationActions.back({ key: null }))
+        })
     }
 }

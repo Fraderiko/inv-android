@@ -16,3 +16,12 @@ export const getInvsCall = (counter) => {
         return err
     })
 }
+
+
+export const upload = (data) => {
+    return axios.post(host + port + '/upload', data, { headers: { 'content-type': 'multipart/form-data' } }).then(result => {
+        return result.data;
+    }, (err) => {
+        return err
+    });
+}

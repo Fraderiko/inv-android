@@ -5,7 +5,7 @@ import uuid from 'uuid/v4'
 class MediaFieldItem extends React.PureComponent {
     render() {
 
-        console.log('value inside cell is ', this.props.value)
+        const { onDeletePress, value, _id } = this.props
 
         return (
             <View style={{width: '100%', height: 340}}>
@@ -13,8 +13,8 @@ class MediaFieldItem extends React.PureComponent {
                 key={uuid()}
                 style={{width: '100%', height: 300}}
                 resizeMode='cover'
-                source={{ uri: 'file://' + this.props.value, isStatic: true }}/>
-                <Button title={'Удалить'}/>
+                source={{ uri: 'file://' + value, isStatic: true }}/>
+                <Button color = '#DC143C' onPress={() => onDeletePress(_id)} title={'Удалить'}/>
             </View>
         )
     }
