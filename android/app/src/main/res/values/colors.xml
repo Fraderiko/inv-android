@@ -2,4 +2,5 @@
 <resources>
     <color name="red">#FF4D4D</color>
     <color name="orange">#FF8364</color>
+    <color name="success">#3CB371</color>
 </resources>

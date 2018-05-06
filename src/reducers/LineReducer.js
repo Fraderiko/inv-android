@@ -3,12 +3,15 @@ import {
     LINE_TEXT_FIELD_CHANGED,
     LINE_IMAGE_CAPTURED,
     LINE_MEDIA_DELETE,
-    LINE_MEDIA_SET
+    LINE_MEDIA_SET,
+    LINE_MISSING_REQUIRED_FIELDS,
+    LINE_MISSING_REQUIRED_FIELDS_RESET
 } from '../actions/types'
 
 
 const INITIAL_STATE = {
-    line: []
+    line: [],
+    isValid: true
 }
 
 export default (state = INITIAL_STATE, action) => {
@@ -16,8 +19,23 @@ export default (state = INITIAL_STATE, action) => {
         case LINE_SHOW:
             return { ...state, line: action.payload }
         case LINE_TEXT_FIELD_CHANGED:
-            let line = state.line
-            line[state.line.findIndex(l => l._id === action.payload._id)].value = action.payload.value
+
+            const i = state.line.findIndex(l => l._id === action.payload._id)
+
+            const e = {
+                ...state.line[i],
+                value: action.payload.value
+            }
+
+            return {
+                ...state,
+                line: [
+                    ...state.line.slice(0, i),
+                    e,
+                    ...state.line.slice(i + 1)
+                ]
+            }
+
             return { ...state, line: line }
         case LINE_IMAGE_CAPTURED:
             let e_line = state.line
@@ -57,7 +75,10 @@ export default (state = INITIAL_STATE, action) => {
                     ...state.line.slice(l_index + 1)
                 ]
             }
-
+        case LINE_MISSING_REQUIRED_FIELDS:
+            return { ...state, isValid: action.payload }
+        case LINE_MISSING_REQUIRED_FIELDS_RESET:
+            return { ...state, isValid: true }
         default:
             return state
     }

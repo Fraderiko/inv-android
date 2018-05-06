@@ -6,6 +6,11 @@ import { lineTextFieldChanged, goBack } from '../../actions/LineActions'
 
 class TextField extends Component {
 
+    componentWillMount() {
+        const { goBack } = this.props
+        this.props.navigation.setParams({ goBack });
+    }
+
     isNumeric() {
         const { _id, fields, line } = this.props
         const field_uuid = line.filter(l => l._id === _id)[0].field_uuid
@@ -18,13 +23,22 @@ class TextField extends Component {
         }
     }
 
+    isTask() {
+        if (Object.getOwnPropertyNames(this.props.task).length !== 0) {
+            return true
+        }
+        return false
+    }
+
     render() {
         if (this.props.nav.routes.filter(r => r.routeName === 'TextField').length > 0) {
             const { _id, value, lineTextFieldChanged, goBack } = this.props
 
+            console.log(value)
+
             return (
                 <View style={styles.container}>
-                    <TextInput style={styles.input} value={value} keyboardType={this.isNumeric() === true ? 'numeric' : 'default'} onChangeText={(newValue) => lineTextFieldChanged(_id, newValue)} />
+                    <TextInput style={styles.input} value={value} keyboardType={this.isNumeric() === true ? 'numeric' : 'default'} onChangeText={(newValue) => lineTextFieldChanged(_id, newValue, this.isTask())} />
                     <Button title={'Сохранить'} onPress={() => goBack()} />
                 </View>
             )
@@ -36,28 +50,78 @@ class TextField extends Component {
 
 const mapStateToProps = state => {
 
+    const taskExists = () => {
+        if (Object.getOwnPropertyNames(state.tasks.currentTask).length !== 0) {
+            return true
+        }
+        return false
+    }
+
+    const componentIsVisible = () => {
+        return state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'TextField')] !== undefined
+    }
+
     const _id = () => {
-        return state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'TextField')] !== undefined ? state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'TextField')].params._id : ""
+        return componentIsVisible() ? state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'TextField')].params._id : ""
+    }
+
+    const getValue = () => {
+        if (componentIsVisible()) {
+            if (taskExists() === false) {
+                return state.line.line[state.line.line.findIndex(l => l._id === _id())].value
+            } else {
+                return state.tasks.currentTask.lines[state.tasks.currentTask.lines.findIndex(l => l._id === _id())].value
+            }
+        } else {
+            return ""
+        }
+    }
+
+    const getFields = () => {
+        if (componentIsVisible()) {
+            if (taskExists() === false) {
+                return state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'TextField')].params.isCustom === false ? state.inv.inv.fields : state.inv.inv.counters_fields
+            } else {
+                return state.tasks.currentTask.fields
+            }
+        } else {
+            return []
+        }
+    }
+
+    const getLine = () => {
+        if (taskExists() === false) {
+            return state.line.line
+        } else {
+            return state.tasks.currentTask.lines
+        }
     }
 
     return {
         _id: _id(),
-        value: state.line.line[state.line.line.findIndex(l => l._id === _id())] !== undefined ? state.line.line[state.line.line.findIndex(l => l._id === _id())].value : "",
-        fields: state.inv.inv.fields,
-        line: state.line.line,
-        nav: state.nav
+        value: getValue(),
+        fields: getFields(),
+        line: getLine(),
+        nav: state.nav,
+        task: state.tasks.currentTask
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        marginLeft: '10%',
-        marginRight: '10%',
-        marginTop: '20%'
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignItems: 'stretch',
+        backgroundColor: 'white',
+        paddingLeft: '10%',
+        paddingRight: '10%',
+        flex: 1
     },
     input: {
-        height: 40
-    }
+        width: '100%',
+        height: 60,
+        paddingTop: 20,
+    },
 })
 
 export default connect(mapStateToProps, {

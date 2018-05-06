@@ -8,6 +8,11 @@ import moment from 'moment'
 
 class DateField extends Component {
 
+    componentWillMount() {
+        const { goBack } = this.props
+        this.props.navigation.setParams({ goBack });
+    }
+
     isTime() {
         const { _id, fields, line } = this.props
         const field_uuid = line.filter(l => l._id === _id)[0].field_uuid
@@ -18,6 +23,13 @@ class DateField extends Component {
         } else {
             return false
         }
+    }
+
+    isTask() {
+        if (Object.getOwnPropertyNames(this.props.task).length !== 0) {
+            return true
+        }
+        return false
     }
 
     render() {
@@ -45,7 +57,7 @@ class DateField extends Component {
                                 marginLeft: 36
                             }
                         }}
-                        onDateChange={(date) => { lineTextFieldChanged(_id, date) }}
+                        onDateChange={(date) => { lineTextFieldChanged(_id, date, this.isTask()) }}
                     />
                     <Button style={styles.button} title={'Сохранить'} onPress={() => goBack()} />
                 </View>
@@ -58,16 +70,60 @@ class DateField extends Component {
 
 const mapStateToProps = state => {
 
+    const taskExists = () => {
+        if (Object.getOwnPropertyNames(state.tasks.currentTask).length !== 0) {
+            return true
+        }
+        return false
+    }
+
+    const componentIsVisible = () => {
+        return state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'DateField')] !== undefined
+    }
+
     const _id = () => {
-        return state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'DateField')] !== undefined ? state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'DateField')].params._id : ""
+        return componentIsVisible() ? state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'DateField')].params._id : ""
+    }
+
+    const getValue = () => {
+        if (componentIsVisible()) {
+            if (taskExists() === false){
+                return state.line.line[state.line.line.findIndex(l => l._id === _id())].value
+            } else {
+                return state.tasks.currentTask.lines[state.tasks.currentTask.lines.findIndex(l => l._id === _id())].value
+            }
+        } else {
+            return ""
+        } 
+    }
+
+    const getFields = () => {
+        if (componentIsVisible()) {
+            if (taskExists() === false) {
+                return state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'DateField')].params.isCustom === false ? state.inv.inv.fields : state.inv.inv.counters_fields
+            } else {
+                return state.tasks.currentTask.fields
+            }
+        } else {
+            return []
+        }
+    }
+
+    const getLine = () => {
+        if (taskExists() === false) {
+            return state.line.line
+        } else {
+            return state.tasks.currentTask.lines
+        }
     }
 
     return {
         _id: _id(),
-        value: state.line.line[state.line.line.findIndex(l => l._id === _id())] !== undefined ? state.line.line[state.line.line.findIndex(l => l._id === _id())].value : "",
-        fields: state.inv.inv.fields,
-        line: state.line.line,
-        nav: state.nav
+        value: getValue(),
+        fields: getFields(),
+        line: getLine(),
+        nav: state.nav,
+        task: state.tasks.currentTask
     }
 }
 

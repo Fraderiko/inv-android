@@ -9,6 +9,11 @@ import MediaField from '../components/Field/MediaField'
 import CameraScreen from '../components/CameraComponent/CameraComponent'
 
 import { StackNavigator } from 'react-navigation';
+import React, { Component } from 'react';
+import { Image, TouchableOpacity } from 'react-native';
+
+import BackButton from './BackButton'
+import RightButton from '../components/Common/RightButton'
 
 
 export default StackNavigator(
@@ -22,29 +27,53 @@ export default StackNavigator(
         InvScreen: {
             screen: InvScreen,
             navigationOptions: ({ navigation }) => ({
-                headerTitle: navigation.state.params.title
-            })
+                headerTitle: navigation.state.params.title,
+                headerLeft: <BackButton onPress={ () => navigation.state.params.goBack() }/> ,
+                headerRight: (<RightButton title={'ДОБАВИТЬ'} onPress={() => navigation.state.params.navigateToCustomLineAlert()} />),  
+            }),
         },
         LineScreen: {
             screen: LineScreen,
             navigationOptions: ({ navigation }) => ({
-                headerTitle: navigation.state.params.title
+                headerTitle: navigation.state.params.title,
+                headerRight: (<RightButton title={'СОХРАНИТЬ'} onPress={(line, inv) => navigation.state.params.saveLine(line, inv)} />),
+                headerLeft: <BackButton onPress={ () => navigation.state.params.goBack() }/> ,
             })
         },
         TextField: {
-            screen: TextField
+            screen: TextField,
+            navigationOptions: ({ navigation }) => ({
+                headerTitle: navigation.state.params.title,
+                headerLeft: <BackButton onPress={ () => navigation.state.params.goBack() }/> ,  
+            }),
         },
         PickerField: {
-            screen: PickerField
+            screen: PickerField,
+            navigationOptions: ({ navigation }) => ({
+                headerTitle: navigation.state.params.title,
+                headerLeft: <BackButton onPress={ () => navigation.state.params.goBack() }/> ,  
+            }),
         },
         DateField: {
-            screen: DateField
+            screen: DateField,
+            navigationOptions: ({ navigation }) => ({
+                headerTitle: navigation.state.params.title,
+                headerLeft: <BackButton onPress={ () => navigation.state.params.goBack() }/> ,  
+            }),
         },
         MediaField: {
-            screen: MediaField
+            screen: MediaField,
+            navigationOptions: ({ navigation }) => ({
+                headerTitle: navigation.state.params.title,
+                headerLeft: <BackButton onPress={ () => navigation.state.params.goBack() }/> ,  
+            }),
         },
         CameraScreen: {
-            screen: CameraScreen
+            screen: CameraScreen,
+            navigationOptions: ({ navigation }) => ({
+                headerTitle: navigation.state.params.title,
+                headerLeft: <BackButton onPress={ () => navigation.state.params.goBack() }/> ,  
+            }),
         }
     },
     {

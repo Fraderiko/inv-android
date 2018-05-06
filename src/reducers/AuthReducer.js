@@ -1,15 +1,19 @@
+import { AsyncStorage } from 'react-native'
+
 import {
     AUTH_LOGIN_CHANGED,
     AUTH_PASSWORD_CHANGED,
     AUTH_PERFORM_AUTH,
     AUTH_OK,
     AUTH_FAILED,
+    AUTH_CHECK,
+    AUTH_STOP_ACTIVITY
 } from '../actions/types'
 
 
-const INITIAL_STATE = { 
-    email : "me",
-    password : "1",
+const INITIAL_STATE = {
+    email: "me",
+    password: "1",
     wrongCredentials: false,
     isLoading: false,
     isAuthed: false,
@@ -29,6 +33,8 @@ export default (state = INITIAL_STATE, action) => {
             return { ...state, _id: action.payload, isLoading: false, isAuthed: true }
         case AUTH_FAILED:
             return { ...state, wrongCredentials: true, isLoading: false }
+        case AUTH_STOP_ACTIVITY:
+            return { ...state, isLoading: false }
         default:
             return state
     }

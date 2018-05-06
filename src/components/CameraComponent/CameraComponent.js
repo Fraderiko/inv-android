@@ -5,13 +5,20 @@ import { imageCaptured } from '../../actions/LineActions'
 import { connect } from 'react-redux';
 
 class CameraComponent extends Component {
+
+    isTask() {
+        if (Object.getOwnPropertyNames(this.props.task).length !== 0) {
+            return true
+        }
+        return false
+    }
+
     render() {
         return (
             <View style={styles.container}>
                 <CameraKitCameraScreen
                     onBottomButtonPressed={(event) => 
-                        // console.log(event)
-                        this.props.imageCaptured(this.props._id, event.captureImages[0].uri)
+                        this.props.imageCaptured(this.props._id, event.captureImages[0].uri, this.isTask())
                     }
                     showFrame={false}
                     scanBarcode={true}
@@ -37,7 +44,8 @@ const mapStateToProps = (state) => {
 
     return {
         _id: _id(),
-        nav: state.nav
+        nav: state.nav,
+        task: state.tasks.currentTask
     }
 }
 

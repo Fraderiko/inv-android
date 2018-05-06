@@ -1,9 +1,10 @@
 import {
     INVS_LIST_GET,
-    INVS_LIST_SHOW
+    INVS_LIST_SHOW,
+    TASKS_SET,
 } from './types'
 
-import { getInvsCall } from '../api/index'
+import { getInvsCall, getTasksCall } from '../api/index'
 
 export const startLoading = () => {
     return {
@@ -14,7 +15,10 @@ export const startLoading = () => {
 export const getInvs = (counter) => {
     return (dispatch) =>
     getInvsCall(counter).then(response => {
-        dispatch({ type: INVS_LIST_SHOW, payload: response })
+        getTasksCall(counter).then(tasks => {
+            dispatch({ type: TASKS_SET, payload: tasks.tasks })
+            dispatch({ type: INVS_LIST_SHOW, payload: response })
+        })
     })
 }
 

@@ -3,8 +3,13 @@ import { View, TextInput, StyleSheet, Button, ActivityIndicator } from 'react-na
 import { connect } from 'react-redux'
 import Login from '../Login/Login'
 import InvsList from '../InvsList/InvsList'
+import { checkAuth } from '../../actions/AuthActions'
 
 class MainContainer extends Component {
+
+    componentDidMount() {
+        this.props.checkAuth()
+    }
 
     resolveComponent() {
 
@@ -32,5 +37,5 @@ const mapStateToProps = state => {
 }
 
 export default connect(mapStateToProps, {
-
+    checkAuth
 })(MainContainer)

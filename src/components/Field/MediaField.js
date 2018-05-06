@@ -5,44 +5,66 @@ import MediaFieldItem from './MediaFieldItem'
 import MediaFieldEmpty from './MediaFieldEmpty'
 import Separator from '../InvsList/Separator'
 import uuid from 'uuid/v4'
-import { navigateToCamera, onDeletePress, onMediaDelete, uploadFiles } from '../../actions/LineActions'
+import { navigateToCamera, onDeletePress, onMediaDelete, uploadFiles, goBack } from '../../actions/LineActions'
 import ActionButton from 'react-native-action-button';
+import { VideoCamera } from '../../nativemodules/VideoCamera'
+import RightButton from '../Common/RightButton'
 
 class MediaField extends Component {
 
+    componentWillMount() {
+        const { goBack } = this.props
+        this.props.navigation.setParams({ goBack });
+    }
+
     static navigationOptions = ({ navigation }) => {
         const params = navigation.state.params || {};
-
         const upload = () => {
-            params.uploadFiles(params.value, params._id)
+            params.uploadFiles(params.value, params._id, params.isTask)
         }
-    
         return {
-          headerRight: (
-            <TouchableOpacity onPress={() => upload()} >
-                <Text style={{ color: "#32CD32", paddingRight: 20, fontWeight: 'bold' }}>СОХРАНИТЬ</Text>
-            </TouchableOpacity>
-          ),
+            headerRight: (<RightButton title={'СОХРАНИТЬ'} onPress={() => upload()} />),
         };
-      };
+    };
+
+    isTask() {
+        if (Object.getOwnPropertyNames(this.props.task).length !== 0) {
+            return true
+        }
+        return false
+    }
 
     onFieldPress() {
-        const { inv, line, navigateToCamera, _id } = this.props
-        const field_uuid = line.filter(f => f._id === _id)[0].field_uuid
-        const field = inv.fields.filter(f => f.uuid === field_uuid)[0]
 
-        switch (field.type) {
-            case 'video':
-            case 'image':
-                navigateToCamera(_id)
-                break
+        if (this.isTask() === false) {
+            const { inv, line, navigateToCamera, _id } = this.props
+            const field_uuid = line.filter(f => f._id === _id)[0].field_uuid
+            const field = inv.fields.filter(f => f.uuid === field_uuid)[0]
+
+            switch (field.type) {
+                case 'image':
+                    navigateToCamera(_id)
+                    break
+            }
+        } else {
+            const { task, navigateToCamera, _id } = this.props
+            const field_uuid = task.lines.filter(f => f._id === _id)[0].field_uuid
+            const field = task.fields.filter(f => f.uuid === field_uuid)[0]
+
+            switch (field.type) {
+                case 'image':
+                    navigateToCamera(_id)
+                    break
+            }
         }
+
+
 
     }
 
     componentWillMount() {
-        const { value, uploadFiles, _id } = this.props
-        this.props.navigation.setParams({ value, uploadFiles, _id });
+        const { value, uploadFiles, _id, goBack } = this.props
+        this.props.navigation.setParams({ value, uploadFiles, _id, goBack });
     }
 
     render() {
@@ -62,7 +84,7 @@ class MediaField extends Component {
                         onDeletePress={(index) => onMediaDelete(_id, index)} />}
                     ItemSeparatorComponent={() => <Separator />}
                 />
-                <ActionButton onPress={() => this.onFieldPress()} buttonColor="rgba(231,76,60,1)"/>
+                <ActionButton onPress={() => this.onFieldPress()} buttonColor="rgba(231,76,60,1)" />
             </View>
         )
     }
@@ -70,17 +92,61 @@ class MediaField extends Component {
 
 const mapStateToProps = state => {
 
+    const taskExists = () => {
+        if (Object.getOwnPropertyNames(state.tasks.currentTask).length !== 0) {
+            return true
+        }
+        return false
+    }
+
+    const componentIsVisible = () => {
+        return state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'MediaField')] !== undefined
+    }
+
     const _id = () => {
-        return state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'MediaField')] !== undefined ? state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'MediaField')].params._id : ""
+        return componentIsVisible() ? state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'MediaField')].params._id : ""
+    }
+
+    const getValue = () => {
+        if (componentIsVisible()) {
+            if (taskExists() === false) {
+                return state.line.line[state.line.line.findIndex(l => l._id === _id())].media
+            } else {
+                return state.tasks.currentTask.lines[state.tasks.currentTask.lines.findIndex(l => l._id === _id())].media
+            }
+        } else {
+            return []
+        }
+    }
+
+    const getFields = () => {
+        if (componentIsVisible()) {
+            if (taskExists() === false) {
+                return state.nav.routes[state.nav.routes.findIndex(c => c.routeName === 'MediaField')].params.isCustom === false ? state.inv.inv.fields : state.inv.inv.counters_fields
+            } else {
+                return state.tasks.currentTask.fields
+            }
+        } else {
+            return []
+        }
+    }
+
+    const getLine = () => {
+        if (taskExists() === false) {
+            return state.line.line
+        } else {
+            return state.tasks.currentTask.lines
+        }
     }
 
     return {
         _id: _id(),
-        value: state.line.line[state.line.line.findIndex(l => l._id === _id())] !== undefined ? state.line.line[state.line.line.findIndex(l => l._id === _id())].media : [],
-        fields: state.inv.inv.fields,
-        line: state.line.line,
+        value: getValue(),
+        fields: getFields(),
+        line: getLine(),
         inv: state.inv.inv,
-        nav: state.nav
+        nav: state.nav,
+        task: state.tasks.currentTask
     }
 }
 
@@ -95,5 +161,6 @@ export default connect(mapStateToProps, {
     navigateToCamera,
     onDeletePress,
     onMediaDelete,
-    uploadFiles
+    uploadFiles,
+    goBack
 })(MediaField)

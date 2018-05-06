@@ -46,7 +46,7 @@ public class AlertMessage extends ReactContextBaseJavaModule implements NativeMo
             Alerter.create(activity)
                     .setTitle(message)
                     .setDuration(3000)
-                    .setBackgroundColorInt(ContextCompat.getColor(activity, R.color.orange))
+                    .setBackgroundColorInt(ContextCompat.getColor(activity, R.color.success))
                     .show();
         }
     }

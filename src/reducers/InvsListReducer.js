@@ -15,7 +15,7 @@ export default (state = INITIAL_STATE, action) => {
         case INVS_LIST_GET:
             return { ...state, isLoading: true }
         case INVS_LIST_SHOW:
-            return { ...state, isLoading: false, invs: state.invs.concat(action.payload) }
+            return { ...state, isLoading: false, invs: action.payload }
         default:
             return state
     }
