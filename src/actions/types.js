@@ -8,6 +8,7 @@ export const AUTH_FAILED = 'AUTH_FAILED'
 export const AUTH_OK = 'AUTH_OK'
 export const AUTH_CHECK = 'AUTH_CHECK'
 export const AUTH_STOP_ACTIVITY = 'AUTH_STOP_ACTIVITY'
+export const AUTH_LOGOUT = 'AUTH_LOGOUT'
 
 
 // INVS

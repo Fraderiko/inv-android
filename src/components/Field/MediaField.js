@@ -12,11 +12,6 @@ import RightButton from '../Common/RightButton'
 
 class MediaField extends Component {
 
-    componentWillMount() {
-        const { goBack } = this.props
-        this.props.navigation.setParams({ goBack });
-    }
-
     static navigationOptions = ({ navigation }) => {
         const params = navigation.state.params || {};
         const upload = () => {
@@ -39,7 +34,11 @@ class MediaField extends Component {
         if (this.isTask() === false) {
             const { inv, line, navigateToCamera, _id } = this.props
             const field_uuid = line.filter(f => f._id === _id)[0].field_uuid
-            const field = inv.fields.filter(f => f.uuid === field_uuid)[0]
+            let field = inv.fields.filter(f => f.uuid === field_uuid)[0]
+
+            if (field === undefined) {
+                field = inv.counters_fields.filter(f => f.uuid === field_uuid)[0]
+            }
 
             switch (field.type) {
                 case 'image':
@@ -49,7 +48,7 @@ class MediaField extends Component {
         } else {
             const { task, navigateToCamera, _id } = this.props
             const field_uuid = task.lines.filter(f => f._id === _id)[0].field_uuid
-            const field = task.fields.filter(f => f.uuid === field_uuid)[0]
+            const field = task.fields.filter(f => f.uuid === field_uuid)[0] 
 
             switch (field.type) {
                 case 'image':
@@ -57,14 +56,18 @@ class MediaField extends Component {
                     break
             }
         }
-
-
-
     }
 
     componentWillMount() {
         const { value, uploadFiles, _id, goBack } = this.props
         this.props.navigation.setParams({ value, uploadFiles, _id, goBack });
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const { value } = this.props
+        if (nextProps.value !== value) {
+            this.props.navigation.setParams({ value });
+        }
     }
 
     render() {

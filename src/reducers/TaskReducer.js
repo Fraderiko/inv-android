@@ -62,10 +62,10 @@ export default (state = INITIAL_STATE, action) => {
                     ]
                 }
             }
-            TASK_SUCCESSFULLY_SAVED:
-                return { ...state, currentTask: {}, isShowingTaskAlert: true }
-            TASK_SUCCESSFULLY_SAVED_RESET:
-                return { ...state, isShowingTaskAlert: false }
+            case TASK_SUCCESSFULLY_SAVED:
+                return { ...state, isShowingTaskAlert: true }
+            case TASK_SUCCESSFULLY_SAVED_RESET:
+                return { ...state, currentTask: {}, isShowingTaskAlert: false }
         default:
             return state
     }

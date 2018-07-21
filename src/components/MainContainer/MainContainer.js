@@ -3,12 +3,25 @@ import { View, TextInput, StyleSheet, Button, ActivityIndicator } from 'react-na
 import { connect } from 'react-redux'
 import Login from '../Login/Login'
 import InvsList from '../InvsList/InvsList'
-import { checkAuth } from '../../actions/AuthActions'
+import { checkAuth, logout } from '../../actions/AuthActions'
+import { AlertMessage } from '../../nativemodules/AlertMessage'
 
 class MainContainer extends Component {
 
     componentDidMount() {
-        this.props.checkAuth()
+        const { isAuthed, checkAuth } = this.props
+        checkAuth()
+        this.props.navigation.setParams({ isAuthed })
+    }
+
+    componentWillReceiveProps(nextProps){
+        if (this.props.isAuthed !== nextProps.isAuthed) {
+            this.props.navigation.setParams({ isAuthed: nextProps.isAuthed })
+        }
+    }
+
+    wrongCredentials() {
+        AlertMessage.showError('Неверные логин или пароль :(')
     }
 
     resolveComponent() {
@@ -16,11 +29,14 @@ class MainContainer extends Component {
         const { isAuthed } = this.props
 
         if (isAuthed === false) {
-            return <Login 
-            authFailed={(isWrong) => this.wrongCredentials(isWrong)}
-            navigation={this.props.navigation} />
+            return <Login
+                authFailed={(isWrong) => this.wrongCredentials(isWrong)}
+                navigation={this.props.navigation} />
         } else {
-            return <InvsList navigation={this.props.navigation}/>
+            return  <View style={{flex: 1}}>
+                    <InvsList navigation={this.props.navigation} />
+                    <Button onPress={() => this.props.logout()} title={'Выход'}/>
+                    </View>
         }
     }
 
@@ -37,5 +53,6 @@ const mapStateToProps = state => {
 }
 
 export default connect(mapStateToProps, {
-    checkAuth
+    checkAuth,
+    logout
 })(MainContainer)

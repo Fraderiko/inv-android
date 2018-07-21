@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import LineListItem from '../LinesList/LineListItem'
 import Separator from '../InvsList/Separator'
 import uuid from 'uuid/v4'
-import { 
+import {
     navigateToTextField,
     navigateToChoiceField,
     navigateToDateField,
@@ -27,7 +27,7 @@ class FieldsList extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.line !== this.props.line || nextProps.task !== this.props.task) {
-            this.props.navigation.setParams({ goBack, saveLine: () => this.props.updateInv(this.props.line, this.props.inv, this.props.counter, this.props.invs, this.isTask(), this.props.task) });
+            this.props.navigation.setParams({ goBack: this.props.goBack, saveLine: () => this.props.updateInv(this.props.line, this.props.inv, this.props.counter, this.props.invs, this.isTask(), this.props.task) });
         }
     }
 
@@ -47,9 +47,16 @@ class FieldsList extends Component {
         return false
     }
 
+    isInv() {
+        if (Object.getOwnPropertyNames(this.props.task).length !== 0) {
+            return true
+        }
+        return false
+    }
+
     prepareData() {
         let result = []
-        let { inv, line, task } = this.props
+        let { inv, line, task, isShowingTaskAlert } = this.props
         let isTask = false
 
         if (this.isTask()) {
@@ -156,32 +163,40 @@ class FieldsList extends Component {
     }
 
     render() {
-        return (
-            <FlatList
-                extraData={this.props.line}
-                style={styles.list}
-                data={this.prepareData()}
-                keyExtractor={(x, i) => uuid()}
-                renderItem={({ item, index }) => <LineListItem
-                    name={item.name}
-                    cell={''}
-                    _id={item._id}
-                    isCompleted={this.getIsCompleted(item._id, item.isCustom)}
-                    onPress={(_id) => this.onFieldPress(_id, item.isCustom)} />}
-                ItemSeparatorComponent={() => <Separator />}
-            />
-        )
+
+        if (this.props.nav.routes.filter(r => r.routeName === 'LineScreen').length > 0) {
+            return (
+                <FlatList
+                    extraData={this.props.line}
+                    style={styles.list}
+                    data={this.prepareData()}
+                    keyExtractor={(x, i) => uuid()}
+                    renderItem={({ item, index }) => <LineListItem
+                        name={item.name}
+                        cell={''}
+                        _id={item._id}
+                        isCompleted={this.getIsCompleted(item._id, item.isCustom)}
+                        onPress={(_id) => this.onFieldPress(_id, item.isCustom)} />}
+                    ItemSeparatorComponent={() => <Separator />}
+                />
+            )
+        } else {
+            return null
+        }
     }
 }
 
 const mapStateToProps = state => {
     return {
+        nav: state.nav,
         line: state.line.line,
         isValid: state.line.isValid,
         inv: state.inv.inv,
         counter: state.auth._id,
         task: state.tasks.currentTask,
-        invs: state.invs.invs
+        invs: state.invs.invs,
+        isShowingTaskAlert: state.tasks.isShowingTaskAlert
+
     }
 }
 

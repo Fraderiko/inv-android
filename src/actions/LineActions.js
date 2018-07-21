@@ -65,6 +65,19 @@ export const navigateToCamera = (_id) => {
     }
 }
 
+export const navigateToCameraWithBarcode = (_id) => {
+    return (dispatch) => {
+        dispatch(NavigationActions.navigate({ routeName: 'CameraScreen', params: { _id, isBarcode: true } }))
+    }
+}
+
+export const barcodeSubmited = (value, _id) => {
+    return (dispatch) => {
+        dispatch({ type: LINE_TEXT_FIELD_CHANGED, payload: { _id, value } })
+        dispatch(NavigationActions.back({ key: null }))
+    }
+}
+
 export const imageCaptured = (_id, uri, isTask) => {
 
     if (isTask === false) {
@@ -102,7 +115,7 @@ export const uploadFiles = (files, _id, isTask) => {
     return (dispatch) => {
         upload(data).then(response => {
 
-            if (isTask === false) {
+            if (isTask === false || isTask === undefined) {
                 dispatch({ type: LINE_MEDIA_SET, payload: { response, _id } })
             } else {
                 dispatch({ type: TASK_MEDIA_SET, payload: { response, _id } })
@@ -190,7 +203,12 @@ export const updateInv = (line, inv, user, invs, isTask, task) => {
 
         if (task.number === 1) {
             task.lines = prevLineState
-        }   
+        }
+        
+        task.lines.forEach(l => {
+            l.user = user
+            l.date = new Date().getTime()
+        })
 
 
         return (dispatch) => {

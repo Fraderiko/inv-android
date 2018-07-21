@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 
 import { Provider, connect } from 'react-redux'
-import { createStore, applyMiddleware } from 'redux'
+import { createStore, applyMiddleware, compose } from 'redux'
 import ReduxThunk from 'redux-thunk'
 import reducers from './src/reducers/index'
 import Navigator from './src/routes/index'

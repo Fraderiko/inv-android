@@ -7,13 +7,14 @@ import {
     AUTH_OK,
     AUTH_FAILED,
     AUTH_CHECK,
-    AUTH_STOP_ACTIVITY
+    AUTH_STOP_ACTIVITY,
+    AUTH_LOGOUT
 } from '../actions/types'
 
 
 const INITIAL_STATE = {
-    email: "me",
-    password: "1",
+    email: "",
+    password: "",
     wrongCredentials: false,
     isLoading: false,
     isAuthed: false,
@@ -35,6 +36,8 @@ export default (state = INITIAL_STATE, action) => {
             return { ...state, wrongCredentials: true, isLoading: false }
         case AUTH_STOP_ACTIVITY:
             return { ...state, isLoading: false }
+        case AUTH_LOGOUT:
+            return { ...state, isAuthed: false, _id: "", email: "", password: "" }
         default:
             return state
     }

@@ -11,6 +11,7 @@ export const authCall = creds => {
 
 export const getInvsCall = counter => {
     return axios.get(host + port + '/invs-counter/' + counter).then((result) => {
+        console.log(result.data)
         return result.data
     }, (err) => {
         return err

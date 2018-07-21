@@ -31,7 +31,7 @@ class LinesList extends Component {
                 'Возможно, для этого потребуется заполнить дополнительные поля',
                 [
                     { text: 'Не буду добавлять' },
-                    { text: 'Ясно, понятно', onPress: () => navigateToCustomLine(inv) },
+                    { text: 'Понятно', onPress: () => navigateToCustomLine(inv) },
                 ],
                 { cancelable: false }
               )
@@ -41,10 +41,20 @@ class LinesList extends Component {
     }
 
     getNameUUID() {
+        // const { inv } = this.props
+        // const expr_articul = /арт.*/i
+
+        // return inv.fields[inv.fields.findIndex(f => expr_articul.test(f.name))].uuid
+
+
         const { inv } = this.props
         const expr_articul = /арт.*/i
 
-        return inv.fields[inv.fields.findIndex(f => expr_articul.test(f.name))].uuid
+        if (inv.fields[0].type === 'video' || inv.fields[0].type === 'image') {
+            return inv.fields[1].uuid
+        } else {
+            return inv.fields[0].uuid
+        }        
     }
 
     getCellUUID() {
@@ -74,6 +84,8 @@ class LinesList extends Component {
             array = this.props.inv.lines
         }
 
+        // добавляем только те линии, в которых нет данных в обязательных полях
+
         array.forEach(l => {
             l.forEach(f => {
                 if (required_fields.includes(f.field_uuid)) {
@@ -91,12 +103,9 @@ class LinesList extends Component {
                             result.push(l)
                         }
                     }
-                } else {
-
-                }
+                } 
             })
         })
-
 
         return result.map(l => ({
             name: l[l.findIndex(c => c.field_uuid === this.getNameUUID())].initial_value,

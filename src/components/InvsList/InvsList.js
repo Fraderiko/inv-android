@@ -43,10 +43,17 @@ class InvsList extends Component {
         const required_fields = inv.fields.filter(f => f.is_required)
         const required_fields_uuids = required_fields.map(r => r.uuid)
         let index
+        let empty
 
         inv.lines.forEach(concreteLine => concreteLine.forEach(l => {
             if (required_fields_uuids.includes(l.field_uuid)) {
                 const field = inv.fields.filter(c => c.uuid === l.field_uuid)[0]
+
+                if (l.initial_value !== "") {
+                    empty = false
+                } else {
+                    empty = true
+                }
 
                 if (field.type === 'text' || field.type === 'digit' || field.type === 'time' || field.type === 'choice' || field.type === 'date') {
                     if (l.value !== "") {
@@ -60,8 +67,34 @@ class InvsList extends Component {
             }
         }))
 
+        if (inv.cells.length > 0) {
+            return counted + " из " + (inv.cells[inv.cells.findIndex(c => c._id === this.props.counter)].ending_cell - inv.cells[inv.cells.findIndex(c => c._id === this.props.counter)].starting_cell + 1)
+        }
 
-        return counted + " из " + lines.length
+        if (empty) {
+            return counted
+        } else {
+            return counted + " из " + lines.length
+        }   
+    }
+
+    isTask = item => {
+        if (item.inv !== undefined) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    getNameForTask = (lines, fields) => {
+        const expr_cell = /яче.*/i
+        const uuid = lines[fields.findIndex(f => expr_cell.test(f.name))] !== undefined ? fields[fields.findIndex(f => expr_cell.test(f.name))].uuid : null
+
+        if (uuid !== null) {
+            return lines[lines.findIndex(f => f.field_uuid === uuid)].initial_value
+        } else {
+            return lines[0].initial_value
+        }
     }
 
     resolveComponent() {
@@ -78,9 +111,10 @@ class InvsList extends Component {
                 keyExtractor={(x, i) => uuid()}
                 sections={[
                     {
-                        'title': 'Первая секция', data: this.props.tasks.map(t => ({ name: t.lines[0].initial_value, _id: t._id })), renderItem: ({ item }) => <InvListItem
-                            name={item.name}
+                        'title': 'Первая секция', data: this.props.tasks.map(t => ({ name: this.getNameForTask(t.lines, t.fields), inv: t.inv.name, number: t.number, _id: t._id })), renderItem: ({ item }) => <InvListItem
+                            name={item.name + '\n' + item.inv}
                             counted={''}
+                            number={item.number}
                             _id={item._id}
                             onPress={(_id) => this.onTaskPress(_id)} />
                     },

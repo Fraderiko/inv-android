@@ -27,7 +27,7 @@ export default StackNavigator(
         InvScreen: {
             screen: InvScreen,
             navigationOptions: ({ navigation }) => ({
-                headerTitle: navigation.state.params.title,
+                headerTitle: navigation.state.params.title.substring(0, 15) + "...",
                 headerLeft: <BackButton onPress={ () => navigation.state.params.goBack() }/> ,
                 headerRight: (<RightButton title={'ДОБАВИТЬ'} onPress={() => navigation.state.params.navigateToCustomLineAlert()} />),  
             }),

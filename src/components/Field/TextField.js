@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
-import { View, TextInput, StyleSheet, Button } from 'react-native';
+import { View, TextInput, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux'
 import uuid from 'uuid/v4'
-import { lineTextFieldChanged, goBack } from '../../actions/LineActions'
+import { lineTextFieldChanged, goBack, navigateToCameraWithBarcode } from '../../actions/LineActions'
 
 class TextField extends Component {
 
     componentWillMount() {
-        const { goBack } = this.props
+        const { goBack, lineTextFieldChanged, _id } = this.props
         this.props.navigation.setParams({ goBack });
+
+        if (this.isTask()) {
+            lineTextFieldChanged(_id, "", true)
+        }
     }
 
     isNumeric() {
@@ -30,16 +34,30 @@ class TextField extends Component {
         return false
     }
 
+    isBarcode() {
+        const { _id, fields, line } = this.props
+        const field_uuid = line.filter(l => l._id === _id)[0].field_uuid
+        const field = fields.filter(f => f.uuid === field_uuid)[0]
+
+        if (field.is_barcode === true) {
+            return (
+                <TouchableOpacity onPress={() => this.props.navigateToCameraWithBarcode(this.props._id)}>
+                    <Image style={{ marginTop: 40, marginLeft: '35%', width: 100, height: 100 }} source={require('../../images/capture_image_button.png')} />
+                </TouchableOpacity>
+                )
+        } else {
+            return null
+        }
+    }
+
     render() {
         if (this.props.nav.routes.filter(r => r.routeName === 'TextField').length > 0) {
             const { _id, value, lineTextFieldChanged, goBack } = this.props
-
-            console.log(value)
-
             return (
                 <View style={styles.container}>
                     <TextInput style={styles.input} value={value} keyboardType={this.isNumeric() === true ? 'numeric' : 'default'} onChangeText={(newValue) => lineTextFieldChanged(_id, newValue, this.isTask())} />
                     <Button title={'Сохранить'} onPress={() => goBack()} />
+                    {this.isBarcode()}
                 </View>
             )
         } else {
@@ -126,5 +144,6 @@ const styles = StyleSheet.create({
 
 export default connect(mapStateToProps, {
     lineTextFieldChanged,
-    goBack
+    goBack,
+    navigateToCameraWithBarcode
 })(TextField)

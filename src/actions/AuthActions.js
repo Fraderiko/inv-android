@@ -5,7 +5,8 @@ import {
     AUTH_OK,
     AUTH_FAILED,
     AUTH_CHECK,
-    AUTH_STOP_ACTIVITY
+    AUTH_STOP_ACTIVITY,
+    AUTH_LOGOUT
 } from './types'
 
 import { authCall } from '../api/index'
@@ -22,6 +23,14 @@ export const onPasswordChange = password => {
         type: AUTH_PASSWORD_CHANGED, payload: password
     }
 }
+
+export const logout = () => {
+    return dispatch => {
+        AsyncStorage.removeItem('@Store:_id')
+        dispatch({ type: AUTH_LOGOUT })
+    } 
+}
+
 
 export const performAuth = (email, password) => {
     return (dispatch) =>
